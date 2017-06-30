@@ -1,4 +1,9 @@
 
+/**
+ * 
+ * @author Hubert Skrzypczak
+ *
+ */
 public class Vector {
 	
 	private double hVal;

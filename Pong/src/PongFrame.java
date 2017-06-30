@@ -6,19 +6,18 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.plaf.BorderUIResource;
 
+/**
+ * 
+ * @author Hubert Skrzypczak
+ *
+ */
 public class PongFrame extends JFrame{
 	
 	private PongPanel pongPanel;
-	private GameOverPanel gameOverPanel;
-	private static PongFrame pongFrame = new PongFrame();
 	
-	private PongFrame() {
+	public PongFrame() {
 		super("Pong Game");
 		init();
-	}
-	
-	public static PongFrame getInstance() {
-		return pongFrame;
 	}
 	
 	public void init() {
@@ -39,12 +38,5 @@ public class PongFrame extends JFrame{
 		requestFocus();
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setVisible(true);
-	}
-	
-	public void gameOver() {
-		getContentPane().remove(pongPanel);
-		gameOverPanel = new GameOverPanel();
-		add(gameOverPanel, BorderLayout.CENTER);
-		pack();
 	}
 }

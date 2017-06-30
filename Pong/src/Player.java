@@ -2,19 +2,22 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 
+/**
+ * 
+ * @author Hubert Skrzypczak
+ *
+ */
 public class Player extends Rectangle{
 	
 	private Color color;
-	private ID id;
 	private int deltaY;
 	
-	public Player(int x, int y, int width, int height, Color color, ID id) {
+	public Player(int x, int y, int width, int height, Color color) {
 		this.x = x;
 		this.y = y;
 		this.width = width;
 		this.height = height;
 		this.color = color;
-		this.id = id;
 		this.deltaY = 0;
 	}
 	
