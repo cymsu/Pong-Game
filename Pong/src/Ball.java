@@ -4,7 +4,15 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.geom.Ellipse2D;
+import java.io.IOException;
+import java.net.URL;
 import java.util.Random;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 
 /**
  * 
@@ -16,6 +24,7 @@ public class Ball {
 	
 	private double x, y, radius, speed, angle;
 	private Player redPlayer, bluePlayer;
+	private Score score;
 	private double dx, dy;
 	private Vector vector;
 	private Random rand;
@@ -24,6 +33,7 @@ public class Ball {
 		rand = new Random();
 		this.redPlayer = redPlayer;
 		this.bluePlayer = bluePlayer;
+		score = Score.getInstance();
 		this.speed = 0;
 		this.radius = 15;
 		this.x = (PongPanel.WIDTH - radius) / 2;
@@ -90,7 +100,15 @@ public class Ball {
 	}
 	
 	public boolean isOut() {
-		return (x < -radius || x > PongPanel.WIDTH);
+		if(x < -radius) {
+			score.addBlueScore();
+			return true;
+		}
+		if(x > PongPanel.WIDTH) {
+			score.addRedScore();
+			return true;
+		}
+		return false;
 	}
 	
 	public void render(Graphics2D g2d) {

@@ -19,6 +19,7 @@ public class PongPanel extends JPanel implements Runnable{
 	
 	private Player redPlayer, bluePlayer;
 	private Ball ball;
+	private Score score;
 	private Menu menu;
 	private KeyInput keyInput;
 	private MouseInput mouseInput;
@@ -37,6 +38,7 @@ public class PongPanel extends JPanel implements Runnable{
 		initPanel();
 		initObjects();
 		initMenu();
+		initScore();
 		initKeyInput();
 		initThread();
 	}
@@ -45,6 +47,10 @@ public class PongPanel extends JPanel implements Runnable{
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setDoubleBuffered(true);
 		requestFocus();
+	}
+	
+	public void initScore() {
+		score = Score.getInstance();
 	}
 	
 	public void initObjects() {
@@ -93,13 +99,22 @@ public class PongPanel extends JPanel implements Runnable{
 		g2d.fillRect(0, 0, getWidth(), getHeight());
 		
 		if(state == STATE.Game) {
+			drawBackground(g2d);
+			score.render(g2d);
 			redPlayer.render(g2d);
 			bluePlayer.render(g2d);
 			ball.render(g2d);
 		}else if(state == STATE.Menu) {
 			menu.render(g2d);
 		}
-		
+	}
+	
+	public void drawBackground(Graphics2D g2d) {
+		int middle = PongPanel.WIDTH / 2;
+		g2d.setColor(new Color(100, 100, 100));
+		for(int i = 0; i < 10; i++) {
+			g2d.fillRoundRect(middle - 2, i * (PongPanel.HEIGHT / 10) + 10, 4, (int)(PongPanel.HEIGHT / 10 * 0.4), 100, 100);
+		}
 	}
 
 	@Override

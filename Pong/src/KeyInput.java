@@ -10,12 +10,14 @@ public class KeyInput implements KeyListener {
 
 	private Player redPlayer, bluePlayer;
 	private Ball ball;
+	private Score score;
 	private int speed;
 	
 	public KeyInput(Ball ball, Player redPlayer, Player bluePlayer, int speed) {
 		this.ball = ball;
 		this.redPlayer = redPlayer;
 		this.bluePlayer = bluePlayer;
+		score = Score.getInstance();
 		this.speed = speed;
 	}
 
@@ -44,6 +46,7 @@ public class KeyInput implements KeyListener {
 				}
 				if(key == KeyEvent.VK_ESCAPE) {
 					PongPanel.state = STATE.Menu;
+					score.resetScore();
 				}
 			}
 		}
