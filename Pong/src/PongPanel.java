@@ -1,8 +1,11 @@
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.image.BufferedImage;
+import java.awt.GraphicsEnvironment;
+import java.io.File;
 
 import javax.swing.JPanel;
 
@@ -17,14 +20,15 @@ public class PongPanel extends JPanel implements Runnable{
 			PLAYER_HEIGHT = 70, PLAYER_SPEED = 2;
 	private long DELAY = 5;
 	
-	private Player redPlayer, bluePlayer;
+	private Player leftPlayer, rightPlayer;
 	private Ball ball;
-	private Score score;
 	private Menu menu;
+	private Score score;
 	private KeyInput keyInput;
-	private MouseInput mouseInput;
-	private boolean running = true;
 	
+	private Font fnt0, fnt1;
+	
+	private boolean running = true;
 	private Thread mainThread;
 	
 	public static STATE state = STATE.Menu;
@@ -39,6 +43,7 @@ public class PongPanel extends JPanel implements Runnable{
 		initObjects();
 		initMenu();
 		initScore();
+		initFonts();
 		initKeyInput();
 		initThread();
 	}
@@ -46,30 +51,40 @@ public class PongPanel extends JPanel implements Runnable{
 	public void initPanel() {
 		setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		setDoubleBuffered(true);
-		requestFocus();
+	}
+	
+	public void initObjects() {
+		leftPlayer = new Player(200, (HEIGHT - PLAYER_HEIGHT) / 2, PLAYER_WIDTH,
+				PLAYER_HEIGHT, new Color(254, 119, 204));
+		rightPlayer = new Player(WIDTH - 200 - PLAYER_WIDTH, (HEIGHT - PLAYER_HEIGHT) / 2,
+				PLAYER_WIDTH, PLAYER_HEIGHT, new Color(221, 116, 75));
+		ball = new Ball(leftPlayer, rightPlayer);
+	}
+	
+	public void initMenu() {
+		menu = new Menu();
+		addMouseListener(menu);
 	}
 	
 	public void initScore() {
 		score = Score.getInstance();
 	}
 	
-	public void initObjects() {
-		redPlayer = new Player(200, (HEIGHT - PLAYER_HEIGHT) / 2, PLAYER_WIDTH,
-				PLAYER_HEIGHT, new Color(250, 130, 170));
-		bluePlayer = new Player(WIDTH - 200 - PLAYER_WIDTH, (HEIGHT - PLAYER_HEIGHT) / 2,
-				PLAYER_WIDTH, PLAYER_HEIGHT, new Color(140, 130, 250));
-		ball = new Ball(redPlayer, bluePlayer);
-	}
-	
-	public void initMenu() {
-		mouseInput = new MouseInput();
-		addMouseListener(mouseInput);
-		menu = new Menu();
+	public void initFonts() {
+		try {
+			GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("/resources/fonts/Montsterrat/Montsterrat-Regular.ttf")));
+			ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("/resources/fonts/Shrikhand/Shrikhand-Regular.ttf")));
+		}catch(Exception e) {
+			System.out.println("Nie wczytano czcionek w PongPanel");
+		}
+		fnt0 = new Font("Montsterrat Regular", Font.PLAIN, 18);
+		fnt1 = new Font("Shrikhand Regular", Font.PLAIN, 36);
 	}
 	
 	public void initKeyInput() {
 		setFocusable(true);
-		keyInput = new KeyInput(ball, redPlayer, bluePlayer, PLAYER_SPEED);
+		keyInput = new KeyInput(ball, leftPlayer, rightPlayer, PLAYER_SPEED);
 		addKeyListener(keyInput);
 	}
 	
@@ -80,8 +95,8 @@ public class PongPanel extends JPanel implements Runnable{
 	
 	public void update() {
 		if(state == STATE.Game) {
-			redPlayer.update();
-			bluePlayer.update();
+			leftPlayer.update();
+			rightPlayer.update();
 			if(ball.update()) {
 				initObjects();
 				initKeyInput();
@@ -100,10 +115,13 @@ public class PongPanel extends JPanel implements Runnable{
 		
 		if(state == STATE.Game) {
 			drawBackground(g2d);
-			score.render(g2d);
-			redPlayer.render(g2d);
-			bluePlayer.render(g2d);
+			score.render(g2d, fnt0);
+			leftPlayer.render(g2d);
+			rightPlayer.render(g2d);
 			ball.render(g2d);
+			if(!ball.isStarted()) {
+				drawStrings(g2d);
+			}
 		}else if(state == STATE.Menu) {
 			menu.render(g2d);
 		}
@@ -111,23 +129,41 @@ public class PongPanel extends JPanel implements Runnable{
 	
 	public void drawBackground(Graphics2D g2d) {
 		int middle = PongPanel.WIDTH / 2;
-		g2d.setColor(new Color(100, 100, 100));
-		for(int i = 0; i < 10; i++) {
-			g2d.fillRoundRect(middle - 2, i * (PongPanel.HEIGHT / 10) + 10, 4, (int)(PongPanel.HEIGHT / 10 * 0.4), 100, 100);
+		g2d.setColor(new Color(88, 89, 91));
+		for(int i = 0; i < HEIGHT / 30; i++) {
+			if(i % 2 == 1)
+				g2d.fillRect(middle - 1, i * 30, 2, 30);
 		}
+	}
+	
+	public void drawStrings(Graphics2D g2d) {
+		String pressSpace = "press space", pressEsc = "PRESS ESC TO MENU";
+		
+		g2d.setFont(fnt1);
+		g2d.setColor(Color.BLACK);
+		FontMetrics metrics = g2d.getFontMetrics();
+		g2d.drawString(pressSpace, (PongPanel.WIDTH - metrics.stringWidth(pressSpace)) / 2,
+				(PongPanel.HEIGHT - metrics.getHeight()) / 2);
+		
+		g2d.setFont(fnt0);
+		g2d.setColor(new Color(88, 89, 91));
+		metrics = g2d.getFontMetrics();
+		g2d.drawString(pressEsc, (PongPanel.WIDTH - metrics.stringWidth(pressEsc)) / 2, metrics.getHeight());
 	}
 
 	@Override
 	public void run() {
-		while(running) {
-			try{
-				long currentTime = System.currentTimeMillis();
-				update();
-				repaint();
-				long delta = System.currentTimeMillis() - currentTime;
-				Thread.sleep(DELAY - delta);
-			} catch(Exception e) {
-				
+		while(true) {
+			if(running) {
+				try{
+					long currentTime = System.currentTimeMillis();
+					update();
+					repaint();
+					long delta = System.currentTimeMillis() - currentTime;
+					Thread.sleep(DELAY - delta);
+				} catch(Exception e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}

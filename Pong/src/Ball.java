@@ -23,16 +23,16 @@ import javax.sound.sampled.UnsupportedAudioFileException;
 public class Ball {
 	
 	private double x, y, radius, speed, angle;
-	private Player redPlayer, bluePlayer;
+	private Player leftPlayer, rightPlayer;
 	private Score score;
 	private double dx, dy;
 	private Vector vector;
 	private Random rand;
 	
-	public Ball(Player redPlayer, Player bluePlayer) {
+	public Ball(Player leftPlayer, Player rightPlayer) {
 		rand = new Random();
-		this.redPlayer = redPlayer;
-		this.bluePlayer = bluePlayer;
+		this.leftPlayer = leftPlayer;
+		this.rightPlayer = rightPlayer;
 		score = Score.getInstance();
 		this.speed = 0;
 		this.radius = 15;
@@ -76,20 +76,20 @@ public class Ball {
 	}
 	
 	public void collision() {
-			if(getBounce().intersects(redPlayer.getBounce())) {
-				angle = y - redPlayer.getCenterY();
+			if(getBounce().intersects(leftPlayer.getBounce())) {
+				angle = y - leftPlayer.getCenterY();
 				vector.setAngle(angle + 90);
 				dx = vector.getH() * speed;
 				dy = vector.getV() * speed;
-				x = redPlayer.getX() + PongPanel.PLAYER_WIDTH;
+				x = leftPlayer.getX() + PongPanel.PLAYER_WIDTH;
 				speed += 0.1;
 			}
-			if(getBounce().intersects(bluePlayer.getBounce())) {
-				angle = bluePlayer.getCenterY() - y;
+			if(getBounce().intersects(rightPlayer.getBounce())) {
+				angle = rightPlayer.getCenterY() - y;
 				vector.setAngle(angle - 90);
 				dx = vector.getH() * speed;
 				dy = vector.getV() * speed;
-				x = bluePlayer.getX() - radius;
+				x = rightPlayer.getX() - radius;
 				speed += 0.1;
 			}
 			
@@ -101,43 +101,22 @@ public class Ball {
 	
 	public boolean isOut() {
 		if(x < -radius) {
-			score.addBlueScore();
+			score.addRightScore();
 			return true;
 		}
 		if(x > PongPanel.WIDTH) {
-			score.addRedScore();
+			score.addLeftScore();
 			return true;
 		}
 		return false;
 	}
 	
 	public void render(Graphics2D g2d) {
-		g2d.setColor(Color.DARK_GRAY);
+		g2d.setColor(Color.BLACK);
 		g2d.fill(new Ellipse2D.Double(x, y, radius, radius));
-		
-		if(speed == 0) {
-			drawStrings(g2d);
-		}
 	}
 	
-	public void drawStrings(Graphics2D g2d) {
-		String pressSpace = "PRESS SPACE", pressEsc = "PRESS ESC TO MENU";
-		Font font = new Font(Font.SANS_SERIF, Font.BOLD, 30);
-		g2d.setFont(font);
-		g2d.setColor(new Color(240, 30, 30));
-		
-		FontMetrics metrics = g2d.getFontMetrics();
-		
-		g2d.drawString(pressSpace, (PongPanel.WIDTH - metrics.stringWidth(pressSpace)) / 2,
-				(PongPanel.HEIGHT - metrics.getHeight()) / 2);
-		
-		
-		font = new Font(Font.SANS_SERIF, Font.PLAIN, 15);
-		g2d.setFont(font);
-		metrics = g2d.getFontMetrics();
-		
-		g2d.drawString(pressEsc, (PongPanel.WIDTH - metrics.stringWidth(pressEsc)) / 2, metrics.getHeight());
-	}
+	
 	
 	
 }

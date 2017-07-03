@@ -8,15 +8,15 @@ import java.awt.event.KeyListener;
  */
 public class KeyInput implements KeyListener {
 
-	private Player redPlayer, bluePlayer;
+	private Player leftPlayer, rightPlayer;
 	private Ball ball;
 	private Score score;
 	private int speed;
 	
-	public KeyInput(Ball ball, Player redPlayer, Player bluePlayer, int speed) {
+	public KeyInput(Ball ball, Player leftPlayer, Player rightPlayer, int speed) {
 		this.ball = ball;
-		this.redPlayer = redPlayer;
-		this.bluePlayer = bluePlayer;
+		this.leftPlayer = leftPlayer;
+		this.rightPlayer = rightPlayer;
 		score = Score.getInstance();
 		this.speed = speed;
 	}
@@ -27,17 +27,17 @@ public class KeyInput implements KeyListener {
 		
 		if(PongPanel.state == STATE.Game) {
 			if(key == KeyEvent.VK_W) {
-				redPlayer.setDeltaY(-speed);
+				leftPlayer.setDeltaY(-speed);
 			}
 			if(key == KeyEvent.VK_S) {
-				redPlayer.setDeltaY(speed);
+				leftPlayer.setDeltaY(speed);
 			}
 			
 			if(key == KeyEvent.VK_UP) {
-				bluePlayer.setDeltaY(-speed);
+				rightPlayer.setDeltaY(-speed);
 			}
 			if(key == KeyEvent.VK_DOWN) {
-				bluePlayer.setDeltaY(speed);
+				rightPlayer.setDeltaY(speed);
 			}
 			
 			if(!ball.isStarted()) {
@@ -57,11 +57,11 @@ public class KeyInput implements KeyListener {
 		int key = e.getKeyCode();
 		if(PongPanel.state == STATE.Game) {
 			if(key == KeyEvent.VK_W || key == KeyEvent.VK_S) {
-				redPlayer.setDeltaY(0);
+				leftPlayer.setDeltaY(0);
 			}
 			
 			if(key == KeyEvent.VK_UP || key == KeyEvent.VK_DOWN) {
-				bluePlayer.setDeltaY(0);
+				rightPlayer.setDeltaY(0);
 			}
 		}
 	}

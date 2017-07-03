@@ -12,13 +12,11 @@ public class Score {
 	
 	private static Score score = null;
 	
-	private int redScore, blueScore;
-	private Font font;
+	private int leftScore, rightScore;
 	
 	private Score() {
-		redScore = 0;
-		blueScore = 0;
-		font = new Font("arial", Font.BOLD, 30);
+		leftScore = 0;
+		rightScore = 0;
 	}
 	
 	public static Score getInstance() {
@@ -30,29 +28,29 @@ public class Score {
 		return score;
 	}
 	
-	public void addRedScore() {
-		redScore++;
+	public void addLeftScore() {
+		leftScore++;
 	}
 	
-	public void addBlueScore() {
-		blueScore++;
+	public void addRightScore() {
+		rightScore++;
 	}
 	
 	public void resetScore() {
-		redScore = blueScore = 0;
+		leftScore = rightScore = 0;
 	}
 	
-	public void render(Graphics2D g2d) {
-		String redScoreString = "" + redScore;
-		String blueScoreString = "" + blueScore;
+	public void render(Graphics2D g2d, Font font) {
+		String leftScoreString = "" + leftScore;
+		String rightScoreString = "" + rightScore;
 		g2d.setFont(font);
+		g2d.setColor(new Color(88, 89, 91));
 		FontMetrics metrics = g2d.getFontMetrics();
-		//blue player score
-		g2d.setColor(new Color(250, 130, 170));
-		g2d.drawString(redScoreString, PongPanel.WIDTH / 2 - metrics.stringWidth(redScoreString) - 50, 70);
 		
-		//red player score
-		g2d.setColor(new Color(140, 130, 250));
-		g2d.drawString(blueScoreString, PongPanel.WIDTH / 2 + 50, 70);
+		//left player score
+		g2d.drawString(leftScoreString, PongPanel.WIDTH / 2 - metrics.stringWidth(leftScoreString) - 80, 70);
+		
+		//right player score
+		g2d.drawString(rightScoreString, PongPanel.WIDTH / 2 + 80, 70);
 	}
 }

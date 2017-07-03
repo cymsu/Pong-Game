@@ -26,10 +26,8 @@ public class PongFrame extends JFrame{
 	}
 	
 	public void initPanels() {
-		setLayout(new BorderLayout());
-		
 		pongPanel = new PongPanel();
-		add(pongPanel, BorderLayout.CENTER);
+		add(pongPanel);
 	}
 	
 	public void initFrame() {
